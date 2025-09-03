@@ -8,12 +8,9 @@
     "server": "cd server && npm run dev",
     "client": "cd client && npm start",
     "build": "cd client && npm run build",
-    "install-all": "npm install && cd server && npm install && cd ../client && npm install",
     "start:prod": "cd server && npm start",
-    "build:prod": "npm run build && cd server && npm run build",
-    "railway:build": "npm run install-all && npm run build && cd server && npm run build",
-    "build:client": "cd client && npm install && npm run build",
-    "postinstall": "echo 'Postinstall complete - build will happen in build phase'"
+    "build:prod": "cd client && npm install && npm run build && cd ../server && npm install",
+    "railway:build": "npm run build:prod"
   },
   "keywords": ["store", "ratings", "fullstack", "express", "react", "postgresql"],
   "author": "Your Name",
