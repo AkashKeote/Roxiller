@@ -4,7 +4,7 @@ import {
   Store, Users, Star, TrendingUp, 
   BarChart3, ArrowRight, 
   Leaf, LogOut, Home,
-  Search
+  Search, Bell
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -44,14 +44,6 @@ const UserDashboard = () => {
       console.error('Logout error:', error);
     }
   };
-
-
-
-
-      reward: 'Explorer Badge',
-      color: '#FF9800'
-    }
-  ];
 
   const getRecentActivity = () => [
     {

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { 
   Store, Star, TrendingUp, 
   Plus, BarChart3, 
-  ShoppingCart, Leaf, LogOut, Home
+  ShoppingCart, Leaf, LogOut, Home, DollarSign
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
