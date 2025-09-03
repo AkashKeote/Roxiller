@@ -2,12 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Search, Edit3, Trash2, 
   Eye, UserPlus, Shield, Store, User,
-  ArrowUpDown, ArrowUp, ArrowDown, X
+  ArrowUpDown, ArrowUp, ArrowDown, X, Star
 } from 'lucide-react';
+
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const AdminUsers = () => {
+  const [USERs, setUSERs] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,18 +18,18 @@ const AdminUsers = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
-  const [showUserDetails, setShowUserDetails] = useState(null);
+  const [editingUSER, setEditingUSER] = useState(null);
+  const [showUSERDetails, setShowUSERDetails] = useState(null);
 
-  const [userForm, setUserForm] = useState({
+  const [USERForm, setUSERForm] = useState({
     name: '',
-    email: '',
     address: '',
-    password: '',
-    role: 'normal_user'
+    phone: '',
+    email: '',
+    ROLE_id: ''
   });
 
-  const fetchUsers = useCallback(async () => {
+  const fetchUSERs = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -38,84 +40,89 @@ const AdminUsers = () => {
         ...(searchTerm && { search: searchTerm })
       });
 
-      const response = await axios.get(`/api/admin/users?${params}`);
-      setUsers(response.data.users);
+      const response = await axios.get(`/api/admin/USERs?${params}`); console.log("API Response:", response.data); console.log("USERs:", response.data.USERs);
+      setUSERs(response.data.USERs);
       setTotalPages(Math.ceil(response.data.total / 10));
     } catch (error) {
-      console.error('Error fetching users:', error);
-      toast.error('Failed to fetch users');
+      console.error('Error fetching USERs:', error);
+      toast.error('Failed to fetch USERs');
     } finally {
       setLoading(false);
     }
   }, [currentPage, sortBy, sortOrder, searchTerm]);
 
+  const fetchUsers = useCallback(async () => {
+    try {
+      const response = await axios.get('/api/admin/users?limit=1000');
+      setUsers(response.data.users.filter(u => u.role === 'USER_ROLE'));
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  }, []);
+
   useEffect(() => {
+    fetchUSERs();
     fetchUsers();
-  }, [fetchUsers]);
+  }, [fetchUSERs, fetchUsers]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!userForm.name || !userForm.email || !userForm.address || !userForm.password) {
-      toast.error('Please fill in all fields');
+    if (!USERForm.name || !USERForm.address || !USERForm.ROLE_id) {
+      toast.error('Please fill in all required fields');
       return;
     }
 
-    if (userForm.name.length < 20 || userForm.name.length > 60) {
-      toast.error('Name must be between 20-60 characters');
+    if (USERForm.name.length < 3 || USERForm.name.length > 100) {
+      toast.error('USER name must be between 3-100 characters');
       return;
     }
 
-    if (userForm.address.length > 400) {
+    if (USERForm.address.length > 400) {
       toast.error('Address must not exceed 400 characters');
       return;
     }
 
-    if (userForm.password.length < 8 || userForm.password.length > 16) {
-      toast.error('Password must be between 8-16 characters');
-      return;
-    }
-
     try {
-      if (editingUser) {
-        await axios.put(`/api/admin/users/${editingUser.id}`, userForm);
-        toast.success('User updated successfully!');
+      if (editingUSER) {
+        await axios.put(`/api/admin/USERs/${editingUSER.id}`, USERForm);
+        toast.success('USER updated successfully!');
       } else {
-        await axios.post('/api/admin/users', userForm);
-        toast.success('User created successfully!');
+        await axios.post('/api/admin/USERs', USERForm);
+        toast.success('USER created successfully!');
       }
       
       setShowAddForm(false);
-      setEditingUser(null);
-      setUserForm({ name: '', email: '', address: '', password: '', role: 'normal_user' });
-      fetchUsers();
+      setEditingUSER(null);
+      setUSERForm({ name: '', address: '', phone: '', email: '', ROLE_id: '' });
+      fetchUSERs();
     } catch (error) {
-      console.error('Error saving user:', error);
-      toast.error('Failed to save user');
+      console.error('Error saving USER:', error);
+      toast.error('Failed to save USER');
     }
   };
 
-  const handleDelete = async (userId) => {
-    if (!window.confirm('Are you sure you want to delete this user?')) return;
+  const handleDelete = async (USERId) => {
+    if (!window.confirm('Are you sure you want to delete this USER?')) return;
     
     try {
-      await axios.delete(`/api/admin/users/${userId}`);
-      toast.success('User deleted successfully!');
-      fetchUsers();
+      await axios.delete(`/api/admin/USERs/${USERId}`);
+      toast.success('USER deleted successfully!');
+      fetchUSERs();
     } catch (error) {
-      console.error('Error deleting user:', error);
-      toast.error('Failed to delete user');
+      console.error('Error deleting USER:', error);
+      toast.error('Failed to delete USER');
     }
   };
 
-  const handleEdit = (user) => {
-    setEditingUser(user);
-    setUserForm({
-      name: user.name,
-      email: user.email,
-      address: user.address,
-      password: '',
-      role: user.role
+  const handleEdit = (USER) => {
+    setEditingUSER(USER);
+    setUSERForm({
+      name: USER.name,
+      address: USER.address,
+      phone: USER.phone || '',
+      email: USER.email || '',
+      ROLE_id: USER.ROLE_id || ''
     });
     setShowAddForm(true);
   };
@@ -130,27 +137,29 @@ const AdminUsers = () => {
     setCurrentPage(1);
   };
 
-  const getRoleBadge = (role) => {
-    const roleConfig = {
-      system_admin: { color: 'bg-red-100 text-red-800', label: 'Admin', icon: Shield },
-      store_owner: { color: 'bg-blue-100 text-blue-800', label: 'Store Owner', icon: Store },
-      normal_user: { color: 'bg-green-100 text-green-800', label: 'Customer', icon: User }
-    };
-
-    const config = roleConfig[role] || roleConfig.normal_user;
-    const Icon = config.icon;
-    
-    return (
-      <span className={`badge ${config.color} inline-flex items-center gap-1`}>
-        <Icon className="w-3 h-3" />
-        {config.label}
-      </span>
-    );
-  };
-
   const getSortIcon = (field) => {
     if (sortBy !== field) return <ArrowUpDown className="w-4 h-4" />;
     return sortOrder === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />;
+  };
+
+  const getSTATUSStars = (STATUS) => { console.log("getSTATUSStars called with STATUS:", STATUS, "type:", typeof STATUS);
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <Star
+          key={i}
+          className={`w-4 h-4 ${
+            i <= STATUS ? 'star-filled' : 'star-empty'
+          }`}
+        />
+      );
+    }
+    return stars;
+  };
+
+  const getROLEName = (ROLEId) => {
+    const ROLE = users.find(u => u.id === ROLEId);
+    return ROLE ? ROLE.name : 'Unassigned';
   };
 
   if (loading) {
@@ -158,7 +167,7 @@ const AdminUsers = () => {
       <div className="min-h-screen flex items-center justify-center gradient-bg">
         <div className="text-center">
           <div className="spinner w-16 h-16 mx-auto mb-4"></div>
-          <p className="text-dark-400 font-medium">Loading users...</p>
+          <p className="text-dark-400 font-medium">Loading USERs...</p>
         </div>
       </div>
     );
@@ -171,9 +180,9 @@ const AdminUsers = () => {
         <div className="mb-8 animate-fade-in">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-4xl font-bold text-gradient mb-2">User Management</h1>
+              <h1 className="text-4xl font-bold text-gradient mb-2">USER Management</h1>
               <p className="text-dark-300 text-lg">
-                Manage user accounts, roles, and permissions
+                Manage USER listings, ROLEs, and information
               </p>
             </div>
             
@@ -181,8 +190,8 @@ const AdminUsers = () => {
               onClick={() => setShowAddForm(true)}
               className="btn-primary inline-flex items-center gap-2"
             >
-              <UserPlus className="w-5 h-5" />
-              Add New User
+                              <USER className="w-5 h-5" />
+              Add New USER
             </button>
           </div>
         </div>
@@ -194,7 +203,7 @@ const AdminUsers = () => {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-dark-300 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search users by name, email, or address..."
+                placeholder="Search USERs by name, address, or ROLE..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="input-field pl-12"
@@ -208,8 +217,8 @@ const AdminUsers = () => {
                 className="input-field w-auto min-w-[120px]"
               >
                 <option value="name">Name</option>
-                <option value="email">Email</option>
-                <option value="role">Role</option>
+                <option value="STATUS">STATUS</option>
+                <option value="ROLE_id">ROLE</option>
                 <option value="created_at">Date Created</option>
               </select>
               
@@ -223,11 +232,11 @@ const AdminUsers = () => {
           </div>
         </div>
 
-        {/* Users Table */}
+        {/* USERs Table */}
         <div className="card animate-slide-up">
           <div className="p-6 border-b border-primary-100">
             <h2 className="text-2xl font-bold text-dark-400">Users ({users.length})</h2>
-            <p className="text-dark-300">Manage all registered users in the system</p>
+            <p className="text-dark-300">Manage all registered users in the system.</p>
           </div>
           
           <div className="overflow-x-auto">
@@ -235,16 +244,16 @@ const AdminUsers = () => {
               <thead className="bg-primary-50">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-medium text-dark-400 uppercase tracking-wider">
-                    User
+                    USER
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-dark-400 uppercase tracking-wider">
-                    Contact
+                    CONTACT
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-dark-400 uppercase tracking-wider">
-                    Role
+                    ROLE
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-dark-400 uppercase tracking-wider">
-                    Status
+                    STATUS
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-dark-400 uppercase tracking-wider">
                     Actions
@@ -252,39 +261,66 @@ const AdminUsers = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-primary-100">
-                {users.map((user) => (
-                  <tr key={user.id} className="hover:bg-primary-50 transition-colors">
+                {USERs && users.length > 0 ? USERs.map((USER) => (
+                  <tr key={USER.id} className="hover:bg-primary-50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                          <span className="text-sm font-semibold text-primary-600">
-                            {user.name?.charAt(0)?.toUpperCase() || 'U'}
-                          </span>
+                          <USER className="w-5 h-5 text-primary-600" />
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-dark-400">{user.name}</div>
-                          <div className="text-sm text-dark-300">ID: {user.id}</div>
+                          <div className="text-sm font-medium text-dark-400">{USER.name}</div>
+                          <div className="text-sm text-dark-300">ID: {USER.id}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-dark-400">{user.email}</div>
-                      <div className="text-sm text-dark-300 max-w-xs truncate">
-                        {user.address}
+                      <div className="text-sm text-dark-400 max-w-xs truncate">
+                        <div className="flex items-center gap-1 mb-1">
+                          <MapPin className="w-3 h-3" />
+                          {USER.address}
+                        </div>
+                        {USER.phone && (
+                          <div className="flex items-center gap-1 mb-1">
+                            <Phone className="w-3 h-3" />
+                            {USER.phone}
+                          </div>
+                        )}
+                        {USER.email && (
+                          <div className="flex items-center gap-1">
+                            <Mail className="w-3 h-3" />
+                            {USER.email}
+                          </div>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      {getRoleBadge(user.role)}
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <User className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <span className="text-sm text-dark-400">
+                          {getROLEName(USER.ROLE_id)}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="badge bg-green-100 text-green-800">
-                        Active
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                          {getSTATUSStars(parseFloat(USER.average_STATUS) || 0)}
+                        </div>
+                        <span className="text-sm text-dark-400">
+                          {(parseFloat(USER.average_STATUS) || 0).toFixed(1)}
+                        </span>
+                        <span className="text-xs text-dark-300">
+                          ({USER.total_STATUSs || 0})
+                        </span>
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => setShowUserDetails(user)}
+                          onClick={() => setShowUSERDetails(USER)}
                           className="p-2 text-primary-600 hover:bg-primary-100 rounded-lg transition-colors"
                           title="View Details"
                         >
@@ -292,24 +328,34 @@ const AdminUsers = () => {
                         </button>
                         
                         <button
-                          onClick={() => handleEdit(user)}
+                          onClick={() => handleEdit(USER)}
                           className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
-                          title="Edit User"
+                          title="Edit USER"
                         >
                           <Edit3 className="w-4 h-4" />
                         </button>
                         
                         <button
-                          onClick={() => handleDelete(user.id)}
+                          onClick={() => handleDelete(USER.id)}
                           className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
-                          title="Delete User"
+                          title="Delete USER"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
                   </tr>
-                ))}
+                )) : (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-12 text-center">
+                      <div className="text-center">
+                        <USER className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-dark-400 mb-2">No USERs found</h3>
+                        <p className="text-dark-300">Create your first USER to get started</p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -354,38 +400,71 @@ const AdminUsers = () => {
           )}
         </div>
 
-        {/* Add/Edit User Modal */}
+        {/* Add/Edit USER Modal */}
         {showAddForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="card w-full max-w-md animate-slide-up">
               <div className="p-6 border-b border-primary-100">
                 <h3 className="text-xl font-semibold text-dark-400">
-                  {editingUser ? 'Edit User' : 'Add New User'}
+                  {editingUSER ? 'Edit USER' : 'Add New USER'}
                 </h3>
                 <p className="text-dark-300 text-sm">
-                  {editingUser ? 'Update user information' : 'Create a new user account'}
+                  {editingUSER ? 'Update USER information' : 'Create a new USER listing'}
                 </p>
               </div>
               
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-dark-400 mb-2">
-                    Full Name
+                    USER Name *
                   </label>
                   <input
                     type="text"
                     id="name"
-                    value={userForm.name}
-                    onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
+                    value={USERForm.name}
+                    onChange={(e) => setUSERForm({ ...USERForm, name: e.target.value })}
                     className="input-field"
-                    placeholder="Enter full name (20-60 characters)"
-                    minLength={20}
-                    maxLength={60}
+                    placeholder="Enter USER name (3-100 characters)"
+                    minLength={3}
+                    maxLength={100}
                     required
                   />
                   <p className="text-xs text-dark-300 mt-1">
-                    {userForm.name.length}/60 characters
+                    {USERForm.name.length}/100 characters
                   </p>
+                </div>
+
+                <div>
+                  <label htmlFor="address" className="block text-sm font-medium text-dark-400 mb-2">
+                    Address *
+                  </label>
+                  <textarea
+                    id="address"
+                    value={USERForm.address}
+                    onChange={(e) => setUSERForm({ ...USERForm, address: e.target.value })}
+                    className="input-field resize-none"
+                    rows={3}
+                    placeholder="Enter USER address (max 400 characters)"
+                    maxLength={400}
+                    required
+                  />
+                  <p className="text-xs text-dark-300 mt-1">
+                    {USERForm.address.length}/400 characters
+                  </p>
+                </div>
+
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-dark-400 mb-2">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    value={USERForm.phone}
+                    onChange={(e) => setUSERForm({ ...USERForm, phone: e.target.value })}
+                    className="input-field"
+                    placeholder="Enter phone number (optional)"
+                  />
                 </div>
 
                 <div>
@@ -395,86 +474,53 @@ const AdminUsers = () => {
                   <input
                     type="email"
                     id="email"
-                    value={userForm.email}
-                    onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+                    value={USERForm.email}
+                    onChange={(e) => setUSERForm({ ...USERForm, email: e.target.value })}
                     className="input-field"
-                    placeholder="Enter email address"
-                    required
+                    placeholder="Enter email address (optional)"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="address" className="block text-sm font-medium text-dark-400 mb-2">
-                    Address
-                  </label>
-                  <textarea
-                    id="address"
-                    value={userForm.address}
-                    onChange={(e) => setUserForm({ ...userForm, address: e.target.value })}
-                    className="input-field resize-none"
-                    rows={3}
-                    placeholder="Enter address (max 400 characters)"
-                    maxLength={400}
-                    required
-                  />
-                  <p className="text-xs text-dark-300 mt-1">
-                    {userForm.address.length}/400 characters
-                  </p>
-                </div>
-
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-dark-400 mb-2">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    id="password"
-                    value={userForm.password}
-                    onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
-                    className="input-field"
-                    placeholder={editingUser ? 'Leave blank to keep current' : 'Enter password (8-16 characters)'}
-                    minLength={editingUser ? 0 : 8}
-                    maxLength={16}
-                    required={!editingUser}
-                  />
-                  {!editingUser && (
-                    <p className="text-xs text-dark-300 mt-1">
-                      Must be 8-16 characters with 1 uppercase and 1 special character
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="role" className="block text-sm font-medium text-dark-400 mb-2">
-                    Role
+                  <label htmlFor="ROLE_id" className="block text-sm font-medium text-dark-400 mb-2">
+                    USER ROLE *
                   </label>
                   <select
-                    id="role"
-                    value={userForm.role}
-                    onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
+                    id="ROLE_id"
+                    value={USERForm.ROLE_id}
+                    onChange={(e) => setUSERForm({ ...USERForm, ROLE_id: e.target.value })}
                     className="input-field"
                     required
                   >
-                    <option value="normal_user">Customer</option>
-                    <option value="store_owner">Store Owner</option>
-                    <option value="system_admin">System Administrator</option>
+                    <option value="">Select a USER ROLE</option>
+                    {users.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.name} ({user.email})
+                      </option>
+                    ))}
                   </select>
+                  {users.length === 0 && (
+                    <p className="text-xs text-red-600 mt-1">
+                      No USER ROLEs available. Please create USER ROLE accounts first.
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex gap-3 pt-4">
                   <button
                     type="submit"
-                    className="btn-primary flex-1"
+                    disabled={users.length === 0}
+                    className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {editingUser ? 'Update User' : 'Create User'}
+                    {editingUSER ? 'Update USER' : 'Create USER'}
                   </button>
                   
                   <button
                     type="button"
                     onClick={() => {
                       setShowAddForm(false);
-                      setEditingUser(null);
-                      setUserForm({ name: '', email: '', address: '', password: '', role: 'normal_user' });
+                      setEditingUSER(null);
+                      setUSERForm({ name: '', address: '', phone: '', email: '', ROLE_id: '' });
                     }}
                     className="btn-outline"
                   >
@@ -486,15 +532,15 @@ const AdminUsers = () => {
           </div>
         )}
 
-        {/* User Details Modal */}
-        {showUserDetails && (
+        {/* USER Details Modal */}
+        {showUSERDetails && showUSERDetails.id && typeof showUSERDetails.id === 'number' && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="card w-full max-w-md animate-slide-up">
               <div className="p-6 border-b border-primary-100">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-semibold text-dark-400">User Details</h3>
+                  <h3 className="text-xl font-semibold text-dark-400">USER Details</h3>
                   <button
-                    onClick={() => setShowUserDetails(null)}
+                    onClick={() => setShowUSERDetails(null)}
                     className="text-dark-300 hover:text-dark-400 transition-colors"
                   >
                     <X className="w-5 h-5" />
@@ -505,34 +551,58 @@ const AdminUsers = () => {
               <div className="p-6 space-y-4">
                 <div className="text-center mb-4">
                   <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-2xl font-bold text-primary-600">
-                      {showUserDetails.name?.charAt(0)?.toUpperCase() || 'U'}
+                    <USER className="w-10 h-10 text-primary-600" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-dark-400">{showUSERDetails.name}</h4>
+                  <div className="flex items-center justify-center gap-1 mt-2">
+                    {getSTATUSStars(parseFloat(showUSERDetails.average_STATUS) || 0)}
+                    <span className="text-sm text-dark-400 ml-1">
+                      {(parseFloat(showUSERDetails.average_STATUS) || 0).toFixed(1)} / 5
                     </span>
                   </div>
-                  <h4 className="text-lg font-semibold text-dark-400">{showUserDetails.name}</h4>
-                  {getRoleBadge(showUserDetails.role)}
                 </div>
                 
                 <div className="space-y-3">
                   <div>
-                    <p className="text-sm text-dark-300">Email</p>
-                    <p className="text-dark-400 font-medium">{showUserDetails.email}</p>
+                    <p className="text-sm text-dark-300">USER ID</p>
+                    <p className="text-dark-400 font-medium">{showUSERDetails.id}</p>
                   </div>
                   
                   <div>
                     <p className="text-sm text-dark-300">Address</p>
-                    <p className="text-dark-400 font-medium">{showUserDetails.address}</p>
+                    <p className="text-dark-400 font-medium">{showUSERDetails.address}</p>
                   </div>
                   
-                  <div>
-                    <p className="text-sm text-dark-300">User ID</p>
-                    <p className="text-dark-400 font-medium">{showUserDetails.id}</p>
-                  </div>
+                  {showUSERDetails.phone && (
+                    <div>
+                      <p className="text-sm text-dark-300">Phone</p>
+                      <p className="text-dark-400 font-medium">{showUSERDetails.phone}</p>
+                    </div>
+                  )}
+                  
+                  {showUSERDetails.email && (
+                    <div>
+                      <p className="text-sm text-dark-300">Email</p>
+                      <p className="text-dark-400 font-medium">{showUSERDetails.email}</p>
+                    </div>
+                  )}
                   
                   <div>
-                    <p className="text-sm text-dark-300">Member Since</p>
+                    <p className="text-sm text-dark-300">ROLE</p>
                     <p className="text-dark-400 font-medium">
-                      {new Date(showUserDetails.created_at).toLocaleDateString()}
+                      {getROLEName(showUSERDetails.ROLE_id)}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-dark-300">Total STATUSs</p>
+                    <p className="text-dark-400 font-medium">{showUSERDetails.total_STATUSs || 0}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-dark-300">Created On</p>
+                    <p className="text-dark-400 font-medium">
+                      {new Date(showUSERDetails.created_at).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
@@ -540,16 +610,16 @@ const AdminUsers = () => {
                 <div className="flex gap-3 pt-4">
                   <button
                     onClick={() => {
-                      setShowUserDetails(null);
-                      handleEdit(showUserDetails);
+                      setShowUSERDetails(null);
+                      handleEdit(showUSERDetails);
                     }}
                     className="btn-primary flex-1"
                   >
-                    Edit User
+                    Edit USER
                   </button>
                   
                   <button
-                    onClick={() => setShowUserDetails(null)}
+                    onClick={() => setShowUSERDetails(null)}
                     className="btn-outline flex-1"
                   >
                     Close
