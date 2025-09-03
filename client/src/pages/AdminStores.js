@@ -4,7 +4,7 @@ import {
   Eye, Star, MapPin, User,
   ArrowUpDown, ArrowUp, ArrowDown, X, Phone, Mail
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -28,11 +28,6 @@ const AdminStores = () => {
     email: '',
     owner_id: ''
   });
-
-  useEffect(() => {
-    fetchStores();
-    fetchUsers();
-  }, [searchTerm, sortBy, sortOrder, currentPage, fetchStores, fetchUsers]);
 
   const fetchStores = useCallback(async () => {
     try {
@@ -64,6 +59,11 @@ const AdminStores = () => {
       console.error('Error fetching users:', error);
     }
   }, []);
+
+  useEffect(() => {
+    fetchStores();
+    fetchUsers();
+  }, [fetchStores, fetchUsers]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

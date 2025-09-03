@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Store, Users, Star, TrendingUp, 
-  BarChart3, ArrowRight, 
+  ArrowRight, 
   Leaf, LogOut, Home,
-  Search, Bell
+  Bell
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -21,9 +21,7 @@ const UserDashboard = () => {
   const [recentStores, setRecentStores] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetchRecentStores();
-  }, [fetchRecentStores]);
+
 
   const fetchRecentStores = useCallback(async () => {
     try {
@@ -36,6 +34,10 @@ const UserDashboard = () => {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    fetchRecentStores();
+  }, [fetchRecentStores]);
 
   const handleLogout = async () => {
     try {

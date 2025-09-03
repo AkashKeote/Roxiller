@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
-  Users, Search, Edit3, Trash2, 
+  Search, Edit3, Trash2, 
   Eye, UserPlus, Shield, Store, User,
   ArrowUpDown, ArrowUp, ArrowDown, X
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -28,10 +27,6 @@ const AdminUsers = () => {
     role: 'normal_user'
   });
 
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
-
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
@@ -53,6 +48,10 @@ const AdminUsers = () => {
       setLoading(false);
     }
   }, [currentPage, sortBy, sortOrder, searchTerm]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

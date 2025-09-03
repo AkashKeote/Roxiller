@@ -19,9 +19,7 @@ const StoreDetail = () => {
     comment: ''
   });
 
-  useEffect(() => {
-    fetchStoreDetails();
-  }, [id, fetchStoreDetails]);
+
 
   const fetchStoreDetails = useCallback(async () => {
     try {
@@ -46,6 +44,10 @@ const StoreDetail = () => {
       setLoading(false);
     }
   }, [id, user]);
+
+  useEffect(() => {
+    fetchStoreDetails();
+  }, [id, fetchStoreDetails]);
 
   const handleRatingSubmit = async (e) => {
     e.preventDefault();

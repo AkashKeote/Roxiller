@@ -18,9 +18,7 @@ const Stores = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    fetchStores();
-  }, [fetchStores]);
+
 
   const fetchStores = useCallback(async () => {
     try {
@@ -43,6 +41,10 @@ const Stores = () => {
       setLoading(false);
     }
   }, [currentPage, sortBy, sortOrder, searchTerm]);
+
+  useEffect(() => {
+    fetchStores();
+  }, [fetchStores]);
 
   const handleSearch = (e) => {
     e.preventDefault();
