@@ -104,7 +104,7 @@ const AdminStores = () => {
   };
 
   const handleDelete = async (storeId) => {
-    if (!confirm('Are you sure you want to delete this store?')) return;
+    if (!window.confirm('Are you sure you want to delete this store?')) return;
     
     try {
       await axios.delete(`/api/admin/stores/${storeId}`);
