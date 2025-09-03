@@ -40,7 +40,7 @@ const AdminStores = () => {
         ...(searchTerm && { search: searchTerm })
       });
 
-      const response = await axios.get(`/api/admin/stores?${params}`);
+      const response = await axios.get(`/api/admin/stores?${params}`); console.log("API Response:", response.data); console.log("Stores:", response.data.stores);
       setStores(response.data.stores);
       setTotalPages(Math.ceil(response.data.total / 10));
     } catch (error) {
@@ -142,7 +142,7 @@ const AdminStores = () => {
     return sortOrder === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />;
   };
 
-  const getRatingStars = (rating) => {
+  const getRatingStars = (rating) => { console.log("getRatingStars called with rating:", rating, "type:", typeof rating);
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
@@ -307,10 +307,10 @@ const AdminStores = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <div className="flex items-center gap-1">
-                          {getRatingStars(store.average_rating && typeof store.average_rating === 'number' ? store.average_rating : 0)}
+                          {getRatingStars(parseFloat(store.average_rating) || 0)}
                         </div>
                         <span className="text-sm text-dark-400">
-                          {store.average_rating && typeof store.average_rating === 'number' ? store.average_rating.toFixed(1) : 'N/A'}
+                          {(parseFloat(store.average_rating) || 0).toFixed(1)}
                         </span>
                         <span className="text-xs text-dark-300">
                           ({store.total_ratings || 0})
@@ -555,9 +555,9 @@ const AdminStores = () => {
                   </div>
                   <h4 className="text-lg font-semibold text-dark-400">{showStoreDetails.name}</h4>
                   <div className="flex items-center justify-center gap-1 mt-2">
-                    {getRatingStars(showStoreDetails.average_rating && typeof showStoreDetails.average_rating === 'number' ? showStoreDetails.average_rating : 0)}
+                    {getRatingStars(parseFloat(showStoreDetails.average_rating) || 0)}
                     <span className="text-sm text-dark-400 ml-1">
-                      {showStoreDetails.average_rating && typeof showStoreDetails.average_rating === 'number' ? showStoreDetails.average_rating.toFixed(1) : 'N/A'} / 5
+                      {(parseFloat(showStoreDetails.average_rating) || 0).toFixed(1)} / 5
                     </span>
                   </div>
                 </div>

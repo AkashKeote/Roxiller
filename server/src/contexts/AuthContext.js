@@ -2,15 +2,8 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-// Set axios base URL based on environment
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://roxlier-backend.up.railway.app';
-
-axios.defaults.baseURL = API_BASE_URL;
-
-// Add CORS and request headers
-axios.defaults.headers.common['Content-Type'] = 'application/json';
-axios.defaults.headers.common['Accept'] = 'application/json';
-axios.defaults.withCredentials = false; // Disable credentials for CORS
+// Set axios base URL for Railway backend
+axios.defaults.baseURL = 'https://roxlier-backend.up.railway.app';
 
 const AuthContext = createContext();
 
@@ -51,46 +44,29 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password, role) => {
     try {
-      console.log('🔍 Login Debug Info:');
       console.log('Making API call to:', '/api/auth/login');
-      console.log('Full URL:', `${axios.defaults.baseURL}/api/auth/login`);
       console.log('Request data:', { email, password, role });
-      
-      // Try using fetch instead of axios to see if there's a difference
-      const response = await fetch(`${axios.defaults.baseURL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({ email, password, role })
+
+      const response = await axios.post('/api/auth/login', {
+        email,
+        password,
+        role
       });
 
-      console.log('✅ Fetch response received:');
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
-      console.log('Response headers:', response.headers);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const responseData = await response.json();
-      console.log('Response data:', responseData);
-      
-      const { token: newToken, user: userData } = responseData;
-      
+      console.log('API response:', response.data);
+      const { token: newToken, user: userData } = response.data;
+
       setToken(newToken);
       setUser(userData);
       localStorage.setItem('token', newToken);
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-      
+
       toast.success(`Welcome back, ${userData.name}!`);
       return { success: true, user: userData };
     } catch (error) {
-      console.error('❌ Login failed:', error);
-      console.error('Error details:', error);
-      const message = 'Login failed. Please try again.';
+      console.error('API call failed:', error);
+      console.error('Error response:', error.response);
+      const message = error.response?.data?.message || 'Login failed. Please try again.';
       toast.error(message);
       return { success: false, message };
     }
@@ -99,14 +75,14 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await axios.post('/api/auth/register', userData);
-      
+
       const { token: newToken, user: newUser } = response.data;
-      
+
       setToken(newToken);
       setUser(newUser);
       localStorage.setItem('token', newToken);
       axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-      
+
       toast.success(`Welcome to Store Ratings, ${newUser.name}!`);
       return { success: true, user: newUser };
     } catch (error) {
@@ -131,7 +107,7 @@ export const AuthProvider = ({ children }) => {
       if (!currentToken) {
         throw new Error('No authentication token found');
       }
-      
+
       const response = await axios.put('/api/auth/profile', profileData, {
         headers: { Authorization: `Bearer ${currentToken}` }
       });
@@ -152,7 +128,7 @@ export const AuthProvider = ({ children }) => {
       if (!currentToken) {
         throw new Error('No authentication token found');
       }
-      
+
       await axios.put('/api/auth/password', {
         currentPassword,
         newPassword
@@ -163,7 +139,6 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to update password';
-      toast.error(message);
       throw error;
     }
   };

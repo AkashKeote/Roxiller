@@ -12,7 +12,7 @@ const ratingRoutes = require('./routes/ratings');
 const adminRoutes = require('./routes/admin');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 
 // Set environment (will be overridden by Railway)
 if (!process.env.NODE_ENV) {
@@ -33,10 +33,15 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// CORS configuration
+// CORS configuration - Allow Firebase hosting domain and Vercel
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.CLIENT_URL || 'https://your-app-name.railway.app'] 
+    ? [
+        process.env.CLIENT_URL || 'https://roxlier.web.app',
+        'https://roxlier.web.app',
+        'https://roxlier.firebaseapp.com',
+        'https://roxlier1.vercel.app'
+      ] 
     : ['http://localhost:3000'],
   credentials: true
 }));
@@ -85,8 +90,10 @@ app.use('*', (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
+  console.log(`🔗 Health check: http://0.0.0.0:${PORT}/api/health`);
+  console.log(`🌐 Railway URL: https://roxlier-backend.up.railway.app`);
+  console.log(`🔌 Railway expects port: 8080`);
 });
