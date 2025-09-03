@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
-  Search, Edit3, Trash2, 
-  Eye, UserPlus, Shield, Store, User,
-  ArrowUpDown, ArrowUp, ArrowDown, X, Star
+  User, Search, Edit3, Trash2, 
+  Eye, Star, MapPin, Mail, Phone,
+  ArrowUpDown, ArrowUp, ArrowDown, X, Shield, Store
 } from 'lucide-react';
 
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const AdminUsers = () => {
-  const [USERs, setUSERs] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,19 +16,18 @@ const AdminUsers = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [editingUSER, setEditingUSER] = useState(null);
-  const [showUSERDetails, setShowUSERDetails] = useState(null);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [showUserDetails, setShowUserDetails] = useState(null);
 
-  const [USERForm, setUSERForm] = useState({
+  const [userForm, setUserForm] = useState({
     name: '',
-    address: '',
-    phone: '',
     email: '',
-    ROLE_id: ''
+    address: '',
+    role: ''
   });
 
-  const fetchUSERs = useCallback(async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -40,91 +38,67 @@ const AdminUsers = () => {
         ...(searchTerm && { search: searchTerm })
       });
 
-      const response = await axios.get(`/api/admin/USERs?${params}`); console.log("API Response:", response.data); console.log("USERs:", response.data.USERs);
-      setUSERs(response.data.USERs);
-      setTotalPages(Math.ceil(response.data.total / 10));
+      const response = await axios.get(`/api/admin/users?${params}`);
+      console.log("API Response:", response.data);
+      console.log("Users:", response.data.users);
+      setUsers(response.data.users || []);
+      setTotalPages(Math.ceil((response.data.total || users.length) / 10));
     } catch (error) {
-      console.error('Error fetching USERs:', error);
-      toast.error('Failed to fetch USERs');
+      console.error('Error fetching users:', error);
+      toast.error('Failed to fetch users');
     } finally {
       setLoading(false);
     }
-  }, [currentPage, sortBy, sortOrder, searchTerm]);
-
-  const fetchUsers = useCallback(async () => {
-    try {
-      const response = await axios.get('/api/admin/users?limit=1000');
-      setUsers(response.data.users.filter(u => u.role === 'USER_ROLE'));
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    }
-  }, []);
+  }, [currentPage, sortBy, sortOrder, searchTerm, users.length]);
 
   useEffect(() => {
-    fetchUSERs();
     fetchUsers();
-  }, [fetchUSERs, fetchUsers]);
+  }, [fetchUsers]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!USERForm.name || !USERForm.address || !USERForm.ROLE_id) {
+    if (!userForm.name || !userForm.email || !userForm.role) {
       toast.error('Please fill in all required fields');
       return;
     }
 
-    if (USERForm.name.length < 3 || USERForm.name.length > 100) {
-      toast.error('USER name must be between 3-100 characters');
-      return;
-    }
-
-    if (USERForm.address.length > 400) {
-      toast.error('Address must not exceed 400 characters');
-      return;
-    }
-
     try {
-      if (editingUSER) {
-        await axios.put(`/api/admin/USERs/${editingUSER.id}`, USERForm);
-        toast.success('USER updated successfully!');
-      } else {
-        await axios.post('/api/admin/USERs', USERForm);
-        toast.success('USER created successfully!');
-      }
+      await axios.put(`/api/admin/users/${editingUser.id}`, userForm);
+      toast.success('User updated successfully!');
       
-      setShowAddForm(false);
-      setEditingUSER(null);
-      setUSERForm({ name: '', address: '', phone: '', email: '', ROLE_id: '' });
-      fetchUSERs();
+      setShowEditForm(false);
+      setEditingUser(null);
+      setUserForm({ name: '', email: '', address: '', role: '' });
+      fetchUsers();
     } catch (error) {
-      console.error('Error saving USER:', error);
-      toast.error('Failed to save USER');
+      console.error('Error updating user:', error);
+      toast.error('Failed to update user');
     }
   };
 
-  const handleDelete = async (USERId) => {
-    if (!window.confirm('Are you sure you want to delete this USER?')) return;
+  const handleDelete = async (userId) => {
+    if (!window.confirm('Are you sure you want to delete this user?')) return;
     
     try {
-      await axios.delete(`/api/admin/USERs/${USERId}`);
-      toast.success('USER deleted successfully!');
-      fetchUSERs();
+      await axios.delete(`/api/admin/users/${userId}`);
+      toast.success('User deleted successfully!');
+      fetchUsers();
     } catch (error) {
-      console.error('Error deleting USER:', error);
-      toast.error('Failed to delete USER');
+      console.error('Error deleting user:', error);
+      toast.error('Failed to delete user');
     }
   };
 
-  const handleEdit = (USER) => {
-    setEditingUSER(USER);
-    setUSERForm({
-      name: USER.name,
-      address: USER.address,
-      phone: USER.phone || '',
-      email: USER.email || '',
-      ROLE_id: USER.ROLE_id || ''
+  const handleEdit = (user) => {
+    setEditingUser(user);
+    setUserForm({
+      name: user.name,
+      email: user.email,
+      address: user.address || '',
+      role: user.role
     });
-    setShowAddForm(true);
+    setShowEditForm(true);
   };
 
   const handleSort = (field) => {
@@ -142,24 +116,43 @@ const AdminUsers = () => {
     return sortOrder === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />;
   };
 
-  const getSTATUSStars = (STATUS) => { console.log("getSTATUSStars called with STATUS:", STATUS, "type:", typeof STATUS);
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <Star
-          key={i}
-          className={`w-4 h-4 ${
-            i <= STATUS ? 'star-filled' : 'star-empty'
-          }`}
-        />
-      );
+  const getRoleIcon = (role) => {
+    switch (role) {
+      case 'system_admin':
+        return <Shield className="w-4 h-4 text-red-600" />;
+      case 'store_owner':
+        return <Store className="w-4 h-4 text-blue-600" />;
+      case 'normal_user':
+        return <User className="w-4 h-4 text-green-600" />;
+      default:
+        return <User className="w-4 h-4 text-gray-600" />;
     }
-    return stars;
   };
 
-  const getROLEName = (ROLEId) => {
-    const ROLE = users.find(u => u.id === ROLEId);
-    return ROLE ? ROLE.name : 'Unassigned';
+  const getRoleLabel = (role) => {
+    switch (role) {
+      case 'system_admin':
+        return 'Admin';
+      case 'store_owner':
+        return 'Store Owner';
+      case 'normal_user':
+        return 'Customer';
+      default:
+        return role;
+    }
+  };
+
+  const getRoleColor = (role) => {
+    switch (role) {
+      case 'system_admin':
+        return 'bg-red-100 text-red-800';
+      case 'store_owner':
+        return 'bg-blue-100 text-blue-800';
+      case 'normal_user':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
   };
 
   if (loading) {
@@ -167,7 +160,7 @@ const AdminUsers = () => {
       <div className="min-h-screen flex items-center justify-center gradient-bg">
         <div className="text-center">
           <div className="spinner w-16 h-16 mx-auto mb-4"></div>
-          <p className="text-dark-400 font-medium">Loading USERs...</p>
+          <p className="text-dark-400 font-medium">Loading users...</p>
         </div>
       </div>
     );
@@ -180,19 +173,11 @@ const AdminUsers = () => {
         <div className="mb-8 animate-fade-in">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-4xl font-bold text-gradient mb-2">USER Management</h1>
+              <h1 className="text-4xl font-bold text-gradient mb-2">User Management</h1>
               <p className="text-dark-300 text-lg">
-                Manage USER listings, ROLEs, and information
+                Manage all registered users in the system
               </p>
             </div>
-            
-            <button
-              onClick={() => setShowAddForm(true)}
-              className="btn-primary inline-flex items-center gap-2"
-            >
-                              <USER className="w-5 h-5" />
-              Add New USER
-            </button>
           </div>
         </div>
 
@@ -203,7 +188,7 @@ const AdminUsers = () => {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-dark-300 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search USERs by name, address, or ROLE..."
+                placeholder="Search users by name, email, or role..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="input-field pl-12"
@@ -217,8 +202,8 @@ const AdminUsers = () => {
                 className="input-field w-auto min-w-[120px]"
               >
                 <option value="name">Name</option>
-                <option value="STATUS">STATUS</option>
-                <option value="ROLE_id">ROLE</option>
+                <option value="email">Email</option>
+                <option value="role">Role</option>
                 <option value="created_at">Date Created</option>
               </select>
               
@@ -232,7 +217,7 @@ const AdminUsers = () => {
           </div>
         </div>
 
-        {/* USERs Table */}
+        {/* Users Table */}
         <div className="card animate-slide-up">
           <div className="p-6 border-b border-primary-100">
             <h2 className="text-2xl font-bold text-dark-400">Users ({users.length})</h2>
@@ -244,16 +229,16 @@ const AdminUsers = () => {
               <thead className="bg-primary-50">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-medium text-dark-400 uppercase tracking-wider">
-                    USER
+                    User
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-dark-400 uppercase tracking-wider">
-                    CONTACT
+                    Contact
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-dark-400 uppercase tracking-wider">
-                    ROLE
+                    Role
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-dark-400 uppercase tracking-wider">
-                    STATUS
+                    Status
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-dark-400 uppercase tracking-wider">
                     Actions
@@ -261,66 +246,51 @@ const AdminUsers = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-primary-100">
-                {USERs && users.length > 0 ? USERs.map((USER) => (
-                  <tr key={USER.id} className="hover:bg-primary-50 transition-colors">
+                {users && users.length > 0 ? users.map((user) => (
+                  <tr key={user.id} className="hover:bg-primary-50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                          <USER className="w-5 h-5 text-primary-600" />
+                          <User className="w-5 h-5 text-primary-600" />
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-dark-400">{USER.name}</div>
-                          <div className="text-sm text-dark-300">ID: {USER.id}</div>
+                          <div className="text-sm font-medium text-dark-400">{user.name}</div>
+                          <div className="text-sm text-dark-300">ID: {user.id}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-dark-400 max-w-xs truncate">
                         <div className="flex items-center gap-1 mb-1">
-                          <MapPin className="w-3 h-3" />
-                          {USER.address}
+                          <Mail className="w-3 h-3" />
+                          {user.email}
                         </div>
-                        {USER.phone && (
-                          <div className="flex items-center gap-1 mb-1">
-                            <Phone className="w-3 h-3" />
-                            {USER.phone}
-                          </div>
-                        )}
-                        {USER.email && (
+                        {user.address && (
                           <div className="flex items-center gap-1">
-                            <Mail className="w-3 h-3" />
-                            {USER.email}
+                            <MapPin className="w-3 h-3" />
+                            {user.address}
                           </div>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                          <User className="w-4 h-4 text-blue-600" />
-                        </div>
-                        <span className="text-sm text-dark-400">
-                          {getROLEName(USER.ROLE_id)}
+                        {getRoleIcon(user.role)}
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
+                          {getRoleLabel(user.role)}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1">
-                          {getSTATUSStars(parseFloat(USER.average_STATUS) || 0)}
-                        </div>
-                        <span className="text-sm text-dark-400">
-                          {(parseFloat(USER.average_STATUS) || 0).toFixed(1)}
-                        </span>
-                        <span className="text-xs text-dark-300">
-                          ({USER.total_STATUSs || 0})
-                        </span>
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-sm text-dark-400">Active</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => setShowUSERDetails(USER)}
+                          onClick={() => setShowUserDetails(user)}
                           className="p-2 text-primary-600 hover:bg-primary-100 rounded-lg transition-colors"
                           title="View Details"
                         >
@@ -328,17 +298,17 @@ const AdminUsers = () => {
                         </button>
                         
                         <button
-                          onClick={() => handleEdit(USER)}
+                          onClick={() => handleEdit(user)}
                           className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
-                          title="Edit USER"
+                          title="Edit User"
                         >
                           <Edit3 className="w-4 h-4" />
                         </button>
                         
                         <button
-                          onClick={() => handleDelete(USER.id)}
+                          onClick={() => handleDelete(user.id)}
                           className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
-                          title="Delete USER"
+                          title="Delete User"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -347,11 +317,11 @@ const AdminUsers = () => {
                   </tr>
                 )) : (
                   <tr>
-                    <td colSpan="6" className="px-6 py-12 text-center">
+                    <td colSpan="5" className="px-6 py-12 text-center">
                       <div className="text-center">
-                        <USER className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-dark-400 mb-2">No USERs found</h3>
-                        <p className="text-dark-300">Create your first USER to get started</p>
+                        <User className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-dark-400 mb-2">No users found</h3>
+                        <p className="text-dark-300">No users are currently registered in the system</p>
                       </div>
                     </td>
                   </tr>
@@ -400,127 +370,96 @@ const AdminUsers = () => {
           )}
         </div>
 
-        {/* Add/Edit USER Modal */}
-        {showAddForm && (
+        {/* Edit User Modal */}
+        {showEditForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="card w-full max-w-md animate-slide-up">
               <div className="p-6 border-b border-primary-100">
                 <h3 className="text-xl font-semibold text-dark-400">
-                  {editingUSER ? 'Edit USER' : 'Add New USER'}
+                  Edit User
                 </h3>
                 <p className="text-dark-300 text-sm">
-                  {editingUSER ? 'Update USER information' : 'Create a new USER listing'}
+                  Update user information
                 </p>
               </div>
               
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-dark-400 mb-2">
-                    USER Name *
+                    Name *
                   </label>
                   <input
                     type="text"
                     id="name"
-                    value={USERForm.name}
-                    onChange={(e) => setUSERForm({ ...USERForm, name: e.target.value })}
+                    value={userForm.name}
+                    onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
                     className="input-field"
-                    placeholder="Enter USER name (3-100 characters)"
-                    minLength={3}
-                    maxLength={100}
+                    placeholder="Enter user name"
                     required
-                  />
-                  <p className="text-xs text-dark-300 mt-1">
-                    {USERForm.name.length}/100 characters
-                  </p>
-                </div>
-
-                <div>
-                  <label htmlFor="address" className="block text-sm font-medium text-dark-400 mb-2">
-                    Address *
-                  </label>
-                  <textarea
-                    id="address"
-                    value={USERForm.address}
-                    onChange={(e) => setUSERForm({ ...USERForm, address: e.target.value })}
-                    className="input-field resize-none"
-                    rows={3}
-                    placeholder="Enter USER address (max 400 characters)"
-                    maxLength={400}
-                    required
-                  />
-                  <p className="text-xs text-dark-300 mt-1">
-                    {USERForm.address.length}/400 characters
-                  </p>
-                </div>
-
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-dark-400 mb-2">
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    value={USERForm.phone}
-                    onChange={(e) => setUSERForm({ ...USERForm, phone: e.target.value })}
-                    className="input-field"
-                    placeholder="Enter phone number (optional)"
                   />
                 </div>
 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-dark-400 mb-2">
-                    Email Address
+                    Email *
                   </label>
                   <input
                     type="email"
                     id="email"
-                    value={USERForm.email}
-                    onChange={(e) => setUSERForm({ ...USERForm, email: e.target.value })}
+                    value={userForm.email}
+                    onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
                     className="input-field"
-                    placeholder="Enter email address (optional)"
+                    placeholder="Enter email address"
+                    required
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="ROLE_id" className="block text-sm font-medium text-dark-400 mb-2">
-                    USER ROLE *
+                  <label htmlFor="address" className="block text-sm font-medium text-dark-400 mb-2">
+                    Address
+                  </label>
+                  <textarea
+                    id="address"
+                    value={userForm.address}
+                    onChange={(e) => setUserForm({ ...userForm, address: e.target.value })}
+                    className="input-field resize-none"
+                    rows={3}
+                    placeholder="Enter address (optional)"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="role" className="block text-sm font-medium text-dark-400 mb-2">
+                    Role *
                   </label>
                   <select
-                    id="ROLE_id"
-                    value={USERForm.ROLE_id}
-                    onChange={(e) => setUSERForm({ ...USERForm, ROLE_id: e.target.value })}
+                    id="role"
+                    value={userForm.role}
+                    onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
                     className="input-field"
                     required
                   >
-                    <option value="">Select a USER ROLE</option>
-                    {users.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name} ({user.email})
-                      </option>
-                    ))}
+                    <option value="">Select a role</option>
+                    <option value="normal_user">Customer</option>
+                    <option value="store_owner">Store Owner</option>
+                    <option value="system_admin">System Admin</option>
                   </select>
-                  {users.length === 0 && (
-                    <p className="text-xs text-red-600 mt-1">
-                      No USER ROLEs available. Please create USER ROLE accounts first.
-                    </p>
-                  )}
                 </div>
 
                 <div className="flex gap-3 pt-4">
                   <button
                     type="submit"
-                    disabled={users.length === 0}
-                    className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="btn-primary flex-1"
                   >
-                    {editingUSER ? 'Update USER' : 'Create USER'}
+                    Update User
                   </button>
                   
                   <button
                     type="button"
                     onClick={() => {
-                      setShowAddForm(false);
-                      setEditingUSER(null);
-                      setUSERForm({ name: '', address: '', phone: '', email: '', ROLE_id: '' });
+                      setShowEditForm(false);
+                      setEditingUser(null);
+                      setUserForm({ name: '', email: '', address: '', role: '' });
                     }}
                     className="btn-outline"
                   >
@@ -532,15 +471,15 @@ const AdminUsers = () => {
           </div>
         )}
 
-        {/* USER Details Modal */}
-        {showUSERDetails && showUSERDetails.id && typeof showUSERDetails.id === 'number' && (
+        {/* User Details Modal */}
+        {showUserDetails && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="card w-full max-w-md animate-slide-up">
               <div className="p-6 border-b border-primary-100">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-semibold text-dark-400">USER Details</h3>
+                  <h3 className="text-xl font-semibold text-dark-400">User Details</h3>
                   <button
-                    onClick={() => setShowUSERDetails(null)}
+                    onClick={() => setShowUserDetails(null)}
                     className="text-dark-300 hover:text-dark-400 transition-colors"
                   >
                     <X className="w-5 h-5" />
@@ -551,75 +490,59 @@ const AdminUsers = () => {
               <div className="p-6 space-y-4">
                 <div className="text-center mb-4">
                   <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <USER className="w-10 h-10 text-primary-600" />
+                    <User className="w-10 h-10 text-primary-600" />
                   </div>
-                  <h4 className="text-lg font-semibold text-dark-400">{showUSERDetails.name}</h4>
-                  <div className="flex items-center justify-center gap-1 mt-2">
-                    {getSTATUSStars(parseFloat(showUSERDetails.average_STATUS) || 0)}
-                    <span className="text-sm text-dark-400 ml-1">
-                      {(parseFloat(showUSERDetails.average_STATUS) || 0).toFixed(1)} / 5
+                  <h4 className="text-lg font-semibold text-dark-400">{showUserDetails.name}</h4>
+                  <div className="flex items-center justify-center gap-2 mt-2">
+                    {getRoleIcon(showUserDetails.role)}
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(showUserDetails.role)}`}>
+                      {getRoleLabel(showUserDetails.role)}
                     </span>
                   </div>
                 </div>
                 
                 <div className="space-y-3">
                   <div>
-                    <p className="text-sm text-dark-300">USER ID</p>
-                    <p className="text-dark-400 font-medium">{showUSERDetails.id}</p>
+                    <p className="text-sm text-dark-300">User ID</p>
+                    <p className="text-dark-400 font-medium">{showUserDetails.id}</p>
                   </div>
                   
                   <div>
-                    <p className="text-sm text-dark-300">Address</p>
-                    <p className="text-dark-400 font-medium">{showUSERDetails.address}</p>
+                    <p className="text-sm text-dark-300">Email</p>
+                    <p className="text-dark-400 font-medium">{showUserDetails.email}</p>
                   </div>
                   
-                  {showUSERDetails.phone && (
+                  {showUserDetails.address && (
                     <div>
-                      <p className="text-sm text-dark-300">Phone</p>
-                      <p className="text-dark-400 font-medium">{showUSERDetails.phone}</p>
-                    </div>
-                  )}
-                  
-                  {showUSERDetails.email && (
-                    <div>
-                      <p className="text-sm text-dark-300">Email</p>
-                      <p className="text-dark-400 font-medium">{showUSERDetails.email}</p>
+                      <p className="text-sm text-dark-300">Address</p>
+                      <p className="text-dark-400 font-medium">{showUserDetails.address}</p>
                     </div>
                   )}
                   
                   <div>
-                    <p className="text-sm text-dark-300">ROLE</p>
-                    <p className="text-dark-400 font-medium">
-                      {getROLEName(showUSERDetails.ROLE_id)}
-                    </p>
+                    <p className="text-sm text-dark-300">Role</p>
+                    <p className="text-dark-400 font-medium">{getRoleLabel(showUserDetails.role)}</p>
                   </div>
                   
                   <div>
-                    <p className="text-sm text-dark-300">Total STATUSs</p>
-                    <p className="text-dark-400 font-medium">{showUSERDetails.total_STATUSs || 0}</p>
-                  </div>
-                  
-                  <div>
-                    <p className="text-sm text-dark-300">Created On</p>
-                    <p className="text-dark-400 font-medium">
-                      {new Date(showUSERDetails.created_at).toLocaleDateString()}
-                    </p>
+                    <p className="text-sm text-dark-300">Status</p>
+                    <p className="text-dark-400 font-medium">Active</p>
                   </div>
                 </div>
                 
                 <div className="flex gap-3 pt-4">
                   <button
                     onClick={() => {
-                      setShowUSERDetails(null);
-                      handleEdit(showUSERDetails);
+                      setShowUserDetails(null);
+                      handleEdit(showUserDetails);
                     }}
                     className="btn-primary flex-1"
                   >
-                    Edit USER
+                    Edit User
                   </button>
                   
                   <button
-                    onClick={() => setShowUSERDetails(null)}
+                    onClick={() => setShowUserDetails(null)}
                     className="btn-outline flex-1"
                   >
                     Close
