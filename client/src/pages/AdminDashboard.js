@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { 
   Users, Store, Star, TrendingUp, Activity, 
   Plus, Settings, BarChart3, ArrowRight, 
-  UserCheck, AlertTriangle, Shield, LogOut, Home
+  UserCheck, Shield, LogOut, Home
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -45,14 +45,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const getSystemHealthColor = (health) => {
-    const healthMap = {
-      good: { color: 'bg-green-100 text-green-800', icon: '🟢' },
-      warning: { color: 'bg-yellow-100 text-yellow-800', icon: '🟡' },
-      critical: { color: 'bg-red-100 text-red-800', icon: '🔴' }
-    };
-    return healthMap[health] || healthMap.good;
-  };
+
 
   const getQuickActionCards = () => [
     {

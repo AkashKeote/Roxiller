@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Store, Users, Star, TrendingUp, Activity, 
-  Plus, Settings, BarChart3, ArrowRight, 
-  ShoppingCart, DollarSign, Leaf, LogOut, Home,
-  Heart, MessageSquare, Bell, Search
+  Store, Users, Star, TrendingUp, 
+  BarChart3, ArrowRight, 
+  Leaf, LogOut, Home,
+  Search
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
-import toast from 'react-hot-toast';
+
 
 const UserDashboard = () => {
   const { user, logout } = useAuth();
-  const [stats, setStats] = useState({
+  const [stats] = useState({
     totalStores: 89,
     totalRatings: 156,
     ratingStreak: 7,
@@ -23,9 +23,9 @@ const UserDashboard = () => {
 
   useEffect(() => {
     fetchRecentStores();
-  }, []);
+  }, [fetchRecentStores]);
 
-  const fetchRecentStores = async () => {
+  const fetchRecentStores = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.get('/api/stores?limit=6');
@@ -35,7 +35,7 @@ const UserDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -45,59 +45,9 @@ const UserDashboard = () => {
     }
   };
 
-  const getQuickActionCards = () => [
-    {
-      title: 'Rate Stores',
-      description: 'Rate your favorite stores',
-      icon: Star,
-      color: '#F9E79F',
-      link: '/stores'
-    },
-    {
-      title: 'View Ratings',
-      description: 'See all your ratings',
-      icon: BarChart3,
-      color: '#B5C7F7',
-      link: '/ratings'
-    },
-    {
-      title: 'Eco Challenges',
-      description: 'Participate in challenges',
-      icon: Leaf,
-      color: '#D6EAF8',
-      link: '/challenges'
-    },
-    {
-      title: 'Find Stores',
-      description: 'Discover new stores',
-      icon: Search,
-      color: '#E8D5C4',
-      link: '/stores'
-    }
-  ];
 
-  const getRatingChallenges = () => [
-    {
-      title: 'Rate 5 Stores',
-      description: 'Help promote good businesses',
-      progress: 3,
-      total: 5,
-      reward: 'Rating Warrior Badge',
-      color: '#4CAF50'
-    },
-    {
-      title: 'Rate 10 Stores',
-      description: 'Rate different stores',
-      progress: 7,
-      total: 10,
-      reward: 'Rating Expert Badge',
-      color: '#2196F3'
-    },
-    {
-      title: 'Visit 10 Stores',
-      description: 'Explore local businesses',
-      progress: 7,
-      total: 10,
+
+
       reward: 'Explorer Badge',
       color: '#FF9800'
     }

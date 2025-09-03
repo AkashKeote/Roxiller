@@ -3,7 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { Star, Store, Users, TrendingUp, ShoppingBag, Settings, Activity, Plus, ArrowRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
-import toast from 'react-hot-toast';
+
 
 const Dashboard = () => {
   const { user } = useAuth();

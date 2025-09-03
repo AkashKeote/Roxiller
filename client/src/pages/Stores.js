@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, MapPin, Star, Filter, ShoppingBag, TrendingUp, Plus, Store } from 'lucide-react';
+import { Search, MapPin, Star, ShoppingBag, Plus, Store } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -20,9 +20,9 @@ const Stores = () => {
 
   useEffect(() => {
     fetchStores();
-  }, [searchTerm, sortBy, sortOrder, currentPage]);
+  }, [fetchStores]);
 
-  const fetchStores = async () => {
+  const fetchStores = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -42,7 +42,7 @@ const Stores = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, sortBy, sortOrder, searchTerm]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -74,12 +74,7 @@ const Stores = () => {
     return stars;
   };
 
-  const getRatingColor = (rating) => {
-    if (rating >= 4.5) return 'text-green-600';
-    if (rating >= 3.5) return 'text-yellow-600';
-    if (rating >= 2.5) return 'text-orange-600';
-    return 'text-red-600';
-  };
+
 
   if (loading) {
     return (

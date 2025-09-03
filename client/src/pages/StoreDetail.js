@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { MapPin, Star, Clock, Phone, Mail, ArrowLeft, Edit3, Trash2, Plus } from 'lucide-react';
+import { MapPin, Star, Phone, Mail, ArrowLeft, Edit3, Trash2, Plus } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -21,9 +21,9 @@ const StoreDetail = () => {
 
   useEffect(() => {
     fetchStoreDetails();
-  }, [id]);
+  }, [id, fetchStoreDetails]);
 
-  const fetchStoreDetails = async () => {
+  const fetchStoreDetails = useCallback(async () => {
     try {
       setLoading(true);
       const [storeResponse, ratingsResponse] = await Promise.all([
@@ -45,7 +45,7 @@ const StoreDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, user]);
 
   const handleRatingSubmit = async (e) => {
     e.preventDefault();

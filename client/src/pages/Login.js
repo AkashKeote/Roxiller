@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Leaf, Store, User, Shield, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Eye, EyeOff, Leaf, Store, User, Shield } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
 const Login = () => {
-  const navigate = useNavigate();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',

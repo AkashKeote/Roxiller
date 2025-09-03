@@ -1,23 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Store, Users, Star, TrendingUp, Activity, 
-  Plus, Settings, BarChart3, ArrowRight, 
-  ShoppingCart, DollarSign, Leaf, LogOut, Home
+  Store, Star, TrendingUp, 
+  Plus, BarChart3, 
+  ShoppingCart, Leaf, LogOut, Home
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const StoreOwnerDashboard = () => {
   const { user, logout } = useAuth();
-  const [stats, setStats] = useState({
+  const [stats] = useState({
     totalProducts: 247,
     ordersToday: 18,
     revenue: 12500,
     storeRating: 4.8
   });
-  const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
     try {

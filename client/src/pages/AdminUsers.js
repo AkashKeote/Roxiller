@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
-  Users, Plus, Search, Filter, Edit3, Trash2, 
-  Eye, MoreHorizontal, UserPlus, Shield, Store, User,
+  Users, Search, Edit3, Trash2, 
+  Eye, UserPlus, Shield, Store, User,
   ArrowUpDown, ArrowUp, ArrowDown, X
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,7 +9,6 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const AdminUsers = () => {
-  const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,9 +30,9 @@ const AdminUsers = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [searchTerm, sortBy, sortOrder, currentPage]);
+  }, [fetchUsers]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -53,7 +52,7 @@ const AdminUsers = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, sortBy, sortOrder, searchTerm]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

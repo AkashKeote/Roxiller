@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
-  Store, Plus, Search, Filter, Edit3, Trash2, 
-  Eye, MoreHorizontal, Star, MapPin, User,
+  Store, Search, Edit3, Trash2, 
+  Eye, Star, MapPin, User,
   ArrowUpDown, ArrowUp, ArrowDown, X, Phone, Mail
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,7 +9,6 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const AdminStores = () => {
-  const { user } = useAuth();
   const [stores, setStores] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,9 +32,9 @@ const AdminStores = () => {
   useEffect(() => {
     fetchStores();
     fetchUsers();
-  }, [searchTerm, sortBy, sortOrder, currentPage]);
+  }, [searchTerm, sortBy, sortOrder, currentPage, fetchStores, fetchUsers]);
 
-  const fetchStores = async () => {
+  const fetchStores = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -55,16 +54,16 @@ const AdminStores = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, sortBy, sortOrder, searchTerm]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const response = await axios.get('/api/admin/users?limit=1000');
       setUsers(response.data.users.filter(u => u.role === 'store_owner'));
     } catch (error) {
       console.error('Error fetching users:', error);
     }
-  };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
