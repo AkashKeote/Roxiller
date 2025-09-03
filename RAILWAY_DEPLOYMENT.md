@@ -36,34 +36,46 @@ In your Railway project dashboard:
 2. **Add these environment variables:**
 
    ```env
-   # Database (Use Railway PostgreSQL)
-   DB_HOST=your_railway_postgres_host
+   # Database (Your existing Render PostgreSQL)
+   DB_HOST=dpg-d2s4vjm3jp1c738sdofg-a.singapore-postgres.render.com
    DB_PORT=5432
-   DB_NAME=your_railway_postgres_db
-   DB_USER=your_railway_postgres_user
-   DB_PASSWORD=your_railway_postgres_password
+   DB_NAME=akash_db_izgs
+   DB_USER=akash_db_izgs_user
+   DB_PASSWORD=dCCHAsjsP13JzHWlxcfRguTXKn5VCZ4X
    
    # JWT
-   JWT_SECRET=your_super_secret_jwt_key_here
+   JWT_SECRET=mysecretkey123
    JWT_EXPIRES_IN=24h
    
    # Server
    PORT=5000
    NODE_ENV=production
    
-   # Client URL (Your Railway app URL)
+   # Client URL (Your Railway app URL - Update this!)
    CLIENT_URL=https://your-app-name.railway.app
    ```
 
-## Step 4: Add PostgreSQL Database
+## Step 4: Database Setup (Optional)
 
+**Option A: Use Your Existing Render Database (Recommended)**
+- ✅ **Already configured** in environment variables above
+- ✅ **No additional cost** for database
+- ✅ **Data preserved** from your current setup
+
+**Option B: Create New Railway PostgreSQL**
 1. **In Railway dashboard, click "New"**
 2. **Choose "Database" → "PostgreSQL"**
 3. **Copy the connection details to your environment variables**
 4. **Wait for database to be ready**
+5. **Run database initialization script**
 
-## Step 5: Initialize Database
+## Step 5: Database Initialization
 
+**If using existing Render database (Option A):**
+- ✅ **No initialization needed** - your data is already there!
+- ✅ **All users, stores, and ratings preserved**
+
+**If using new Railway database (Option B):**
 1. **Go to your Railway app's "Deployments" tab**
 2. **Click on the latest deployment**
 3. **Go to "Logs" tab**

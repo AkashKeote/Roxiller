@@ -11,7 +11,8 @@
     "install-all": "npm install && cd server && npm install && cd ../client && npm install",
     "start:prod": "cd server && npm start",
     "build:prod": "npm run build && cd server && npm run build",
-    "postinstall": "npm run build"
+    "build:client": "cd client && npm install && npm run build",
+    "postinstall": "npm run install-all"
   },
   "keywords": ["store", "ratings", "fullstack", "express", "react", "postgresql"],
   "author": "Your Name",
