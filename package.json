@@ -11,8 +11,9 @@
     "install-all": "npm install && cd server && npm install && cd ../client && npm install",
     "start:prod": "cd server && npm start",
     "build:prod": "npm run build && cd server && npm run build",
+    "railway:build": "npm run install-all && npm run build && cd server && npm run build",
     "build:client": "cd client && npm install && npm run build",
-    "postinstall": "npm run install-all"
+    "postinstall": "echo 'Postinstall complete - build will happen in build phase'"
   },
   "keywords": ["store", "ratings", "fullstack", "express", "react", "postgresql"],
   "author": "Your Name",
