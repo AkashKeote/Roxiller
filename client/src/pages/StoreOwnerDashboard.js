@@ -15,7 +15,7 @@ const StoreOwnerDashboard = () => {
     totalProducts: 247,
     ordersToday: 18,
     revenue: 12500,
-    ecoRating: 4.8
+    storeRating: 4.8
   });
   const [loading, setLoading] = useState(false);
 
@@ -71,11 +71,11 @@ const StoreOwnerDashboard = () => {
       action: () => toast.success('Store Analytics feature coming soon!')
     },
     {
-      title: 'Eco Products',
-      description: 'Manage eco-friendly products',
+      title: 'Product Management',
+      description: 'Manage your store products',
       icon: Leaf,
       color: '#E8D5C4',
-      action: () => toast.success('Eco Products feature coming soon!')
+      action: () => toast.success('Product Management feature coming soon!')
     },
     {
       title: 'Impact Report',
@@ -86,7 +86,7 @@ const StoreOwnerDashboard = () => {
     },
     {
       title: 'Improve Score',
-      description: 'Tips to improve eco rating',
+      description: 'Tips to improve store rating',
       icon: TrendingUp,
       color: '#F9E79F',
       action: () => toast.success('Improve Score feature coming soon!')
@@ -171,13 +171,13 @@ const StoreOwnerDashboard = () => {
           <div className="bg-white rounded-3xl shadow-lg shadow-gray-200/50 p-6 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center justify-center mb-4">
               <div className="w-16 h-16 bg-[#E8D5C4] rounded-2xl shadow-lg shadow-[#E8D5C4]/30 flex items-center justify-center">
-                <Eco className="w-8 h-8 text-white" />
+                <Star className="w-8 h-8 text-white" />
               </div>
             </div>
             <h3 className="text-2xl font-bold text-[#22223B] mb-1">
-              {stats.ecoRating}★
+              {stats.storeRating}★
             </h3>
-            <p className="text-[#22223B]/70">Eco Rating</p>
+            <p className="text-[#22223B]/70">Store Rating</p>
           </div>
         </div>
 

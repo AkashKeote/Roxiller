@@ -72,13 +72,6 @@ npm start
 - ✅ Admin dashboard with statistics
 - ✅ Responsive design
 
-## 🚨 Important Notes
 
-- Change default passwords in production
-- Update JWT_SECRET in production
-- Database includes sample data for testing
-- All form validations implemented as per requirements
 
----
 
-**Ready for your internship presentation! 🎉**

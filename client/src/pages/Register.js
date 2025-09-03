@@ -131,10 +131,10 @@ const Register = () => {
           </div>
           
           <h1 className="text-4xl font-bold text-[#22223B] mb-2 leading-tight">
-            Join EcoBazaarX<br />Create Account
+            Join Store Rating<br />System
           </h1>
           <p className="text-[#22223B]/70 text-base">
-            Start your sustainable shopping journey today
+            Create your account to start rating stores
           </p>
         </div>
 
@@ -154,7 +154,7 @@ const Register = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full px-5 py-5 border-2 border-gray-200 rounded-2xl focus:border-[#F9E79F] focus:ring-4 focus:ring-[#F9E79F]/20 transition-all duration-300 bg-white shadow-sm"
+                  className="w-full pl-16 pr-5 py-5 border-2 border-gray-200 rounded-2xl focus:border-[#F9E79F] focus:ring-4 focus:ring-[#F9E79F]/20 transition-all duration-300 bg-white shadow-sm"
                   placeholder="Enter your full name (20-60 characters)"
                   minLength={20}
                   maxLength={60}
@@ -180,7 +180,7 @@ const Register = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-5 py-5 border-2 border-gray-200 rounded-2xl focus:border-[#F9E79F] focus:ring-4 focus:ring-[#F9E79F]/20 transition-all duration-300 bg-white shadow-sm"
+                  className="w-full pl-16 pr-5 py-5 border-2 border-gray-200 rounded-2xl focus:border-[#F9E79F] focus:ring-4 focus:ring-[#F9E79F]/20 transition-all duration-300 bg-white shadow-sm"
                   placeholder="Enter your email address"
                   required
                 />
@@ -200,7 +200,7 @@ const Register = () => {
                   name="address"
                   value={formData.address}
                   onChange={handleInputChange}
-                  className="w-full px-5 py-5 border-2 border-gray-200 rounded-2xl focus:border-[#F9E79F] focus:ring-4 focus:ring-[#F9E79F]/20 transition-all duration-300 bg-white shadow-sm resize-none"
+                  className="w-full pl-16 pr-5 py-5 border-2 border-gray-200 rounded-2xl focus:border-[#F9E79F] focus:ring-4 focus:ring-[#F9E79F]/20 transition-all duration-300 bg-white shadow-sm resize-none"
                   rows={3}
                   placeholder="Enter your address (max 400 characters)"
                   maxLength={400}
@@ -226,7 +226,7 @@ const Register = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full px-5 py-5 border-2 border-gray-200 rounded-2xl focus:border-[#F9E79F] focus:ring-4 focus:ring-[#F9E79F]/20 transition-all duration-300 bg-white shadow-sm pr-14"
+                  className="w-full pl-16 pr-14 py-5 border-2 border-gray-200 rounded-2xl focus:border-[#F9E79F] focus:ring-4 focus:ring-[#F9E79F]/20 transition-all duration-300 bg-white shadow-sm"
                   placeholder="Create a password"
                   required
                 />
@@ -286,7 +286,7 @@ const Register = () => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className="w-full px-5 py-5 border-2 border-gray-200 rounded-2xl focus:border-[#F9E79F] focus:ring-4 focus:ring-[#F9E79F]/20 transition-all duration-300 bg-white shadow-sm pr-14"
+                  className="w-full pl-16 pr-14 py-5 border-2 border-gray-200 rounded-2xl focus:border-[#F9E79F] focus:ring-4 focus:ring-[#F9E79F]/20 transition-all duration-300 bg-white shadow-sm"
                   placeholder="Confirm your password"
                   required
                 />

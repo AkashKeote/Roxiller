@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "build": "echo 'Server build complete'",
     "db:init": "node scripts/init-db.js",
     "db:setup": "node scripts/setupDatabase.js",
     "demo:create": "node scripts/createDemoAccounts.js"

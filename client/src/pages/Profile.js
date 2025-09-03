@@ -490,7 +490,45 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Account Information */}
+        {/* Quick Actions - Pallet Chips */}
+        <div className="mt-8 animate-slide-up">
+          <div className="card">
+            <div className="p-6 border-b border-primary-100">
+              <h2 className="text-2xl font-bold text-dark-400">Quick Actions</h2>
+            </div>
+            
+            <div className="p-6">
+              <div className="flex flex-wrap gap-3">
+                <button className="px-4 py-2 rounded-full border-2 bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200 transition-all duration-300 flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Edit Profile
+                </button>
+                
+                <button className="px-4 py-2 rounded-full border-2 bg-green-100 text-green-800 border-green-200 hover:bg-green-200 transition-all duration-300 flex items-center gap-2">
+                  <Edit3 className="w-4 h-4" />
+                  Change Password
+                </button>
+                
+                <button className="px-4 py-2 rounded-full border-2 bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-200 transition-all duration-300 flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  Update Email
+                </button>
+                
+                <button className="px-4 py-2 rounded-full border-2 bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-200 transition-all duration-300 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  Change Location
+                </button>
+                
+                <button className="px-4 py-2 rounded-full border-2 bg-pink-100 text-pink-800 border-pink-200 hover:bg-pink-200 transition-all duration-300 flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Privacy Settings
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Account Information - Pallet Chips */}
         <div className="mt-8 animate-slide-up">
           <div className="card">
             <div className="p-6 border-b border-primary-100">
@@ -498,33 +536,59 @@ const Profile = () => {
             </div>
             
             <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div className="text-center p-4 bg-primary-50 rounded-xl">
-                  <div className="w-12 h-12 bg-primary-400 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <User className="w-6 h-6 text-white" />
+              <div className="flex flex-wrap gap-3">
+                <div className="px-4 py-3 rounded-full border-2 bg-blue-100 text-blue-800 border-blue-200 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center">
+                    <User className="w-4 h-4 text-blue-800" />
                   </div>
-                  <h3 className="font-semibold text-dark-400 mb-1">Account Type</h3>
-                  <p className="text-primary-600 capitalize">
-                    {user?.role?.replace('_', ' ') || 'User'}
-                  </p>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-blue-600">Account Type</span>
+                    <span className="font-semibold text-sm capitalize">
+                      {user?.role?.replace('_', ' ') || 'User'}
+                    </span>
+                  </div>
                 </div>
                 
-                <div className="text-center p-4 bg-secondary-50 rounded-xl">
-                  <div className="w-12 h-12 bg-secondary-400 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Mail className="w-6 h-6 text-white" />
+                <div className="px-4 py-3 rounded-full border-2 bg-green-100 text-green-800 border-green-200 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-200 flex items-center justify-center">
+                    <Mail className="w-4 h-4 text-green-800" />
                   </div>
-                  <h3 className="font-semibold text-dark-400 mb-1">Email Verified</h3>
-                  <p className="text-secondary-600">Active</p>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-green-600">Email Status</span>
+                    <span className="font-semibold text-sm">Verified ✓</span>
+                  </div>
                 </div>
                 
-                <div className="text-center p-4 bg-accent-50 rounded-xl">
-                  <div className="w-12 h-12 bg-accent-400 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <MapPin className="w-6 h-6 text-white" />
+                <div className="px-4 py-3 rounded-full border-2 bg-purple-100 text-purple-800 border-purple-200 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center">
+                    <MapPin className="w-4 h-4 text-purple-800" />
                   </div>
-                  <h3 className="font-semibold text-dark-400 mb-1">Location</h3>
-                  <p className="text-accent-600">
-                    {user?.address?.split(',')[0] || 'Not specified'}
-                  </p>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-purple-600">Location</span>
+                    <span className="font-semibold text-sm">
+                      {user?.address?.split(',')[0] || 'Not specified'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="px-4 py-3 rounded-full border-2 bg-orange-100 text-orange-800 border-orange-200 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-orange-200 flex items-center justify-center">
+                    <User className="w-4 h-4 text-orange-800" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-orange-600">Member Since</span>
+                    <span className="font-semibold text-sm">2024</span>
+                  </div>
+                </div>
+
+                <div className="px-4 py-3 rounded-full border-2 bg-pink-100 text-pink-800 border-pink-200 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-pink-200 flex items-center justify-center">
+                    <User className="w-4 h-4 text-pink-800" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-pink-600">Profile Status</span>
+                    <span className="font-semibold text-sm">Complete ✓</span>
+                  </div>
                 </div>
               </div>
             </div>

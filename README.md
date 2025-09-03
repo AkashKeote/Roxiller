@@ -258,4 +258,3 @@ npm start
 
 ---
 
-**Note**: This is an internship coding challenge project. Change default passwords and JWT secrets in production environments.

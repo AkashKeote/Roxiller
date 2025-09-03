@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, MapPin, Star, Filter, ShoppingBag, TrendingUp } from 'lucide-react';
+import { Search, MapPin, Star, Filter, ShoppingBag, TrendingUp, Plus, Store } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+
+// Debug import
+console.log('Plus icon imported:', typeof Plus);
 
 const Stores = () => {
   const { user } = useAuth();
@@ -150,7 +153,59 @@ const Stores = () => {
           </form>
         </div>
 
-        {/* Stores Grid */}
+        {/* Pallet Chips - Store Categories */}
+        <div className="mb-6 animate-slide-up">
+          <h3 className="text-lg font-semibold text-dark-400 mb-4">Store Categories</h3>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { label: 'All Stores', color: 'bg-blue-100 text-blue-800 border-blue-200', active: true },
+              { label: 'Grocery', color: 'bg-green-100 text-green-800 border-green-200', active: false },
+              { label: 'Electronics', color: 'bg-purple-100 text-purple-800 border-purple-200', active: false },
+              { label: 'Fashion', color: 'bg-pink-100 text-pink-800 border-pink-200', active: false },
+              { label: 'Restaurants', color: 'bg-orange-100 text-orange-800 border-orange-200', active: false },
+              { label: 'Healthcare', color: 'bg-red-100 text-red-800 border-red-200', active: false }
+            ].map((category, index) => (
+              <button
+                key={index}
+                className={`px-4 py-2 rounded-full border-2 transition-all duration-300 hover:scale-105 ${
+                  category.active 
+                    ? `${category.color} shadow-md` 
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                {category.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Pallet Chips - Rating Filters */}
+        <div className="mb-6 animate-slide-up">
+          <h3 className="text-lg font-semibold text-dark-400 mb-4">Rating Filters</h3>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { label: 'All Ratings', stars: '⭐', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', active: true },
+              { label: '5 Stars', stars: '⭐⭐⭐⭐⭐', color: 'bg-green-100 text-green-800 border-green-200', active: false },
+              { label: '4+ Stars', stars: '⭐⭐⭐⭐', color: 'bg-blue-100 text-blue-800 border-blue-200', active: false },
+              { label: '3+ Stars', stars: '⭐⭐⭐', color: 'bg-orange-100 text-orange-800 border-orange-200', active: false },
+              { label: 'Top Rated', stars: '🏆', color: 'bg-purple-100 text-purple-800 border-purple-200', active: false }
+            ].map((filter, index) => (
+              <button
+                key={index}
+                className={`px-4 py-2 rounded-full border-2 transition-all duration-300 hover:scale-105 flex items-center gap-2 ${
+                  filter.active 
+                    ? `${filter.color} shadow-md` 
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <span className="text-sm">{filter.stars}</span>
+                {filter.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Stores as Pallet Chips */}
         {stores.length === 0 ? (
           <div className="card text-center py-16 animate-slide-up">
             <MapPin className="w-20 h-20 text-gray-300 mx-auto mb-6" />
@@ -160,63 +215,58 @@ const Stores = () => {
             </p>
             {!searchTerm && user?.role === 'system_admin' && (
               <Link to="/admin/stores" className="btn-primary inline-flex items-center gap-2">
-                <Plus className="w-5 h-5" />
+                {Plus ? <Plus className="w-5 h-5" /> : <span>+</span>}
                 Add First Store
               </Link>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8 animate-slide-up">
-            {stores.map((store) => (
-              <div key={store.id} className="card-hover group">
-                <div className="p-6">
-                  {/* Store Header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-dark-400 group-hover:text-primary-600 transition-colors line-clamp-2">
-                        {store.name}
-                      </h3>
-                    </div>
-                    <div className="flex items-center gap-1 ml-3">
+          <div className="mb-8 animate-slide-up">
+            <h3 className="text-lg font-semibold text-dark-400 mb-4">Available Stores</h3>
+            <div className="flex flex-wrap gap-3">
+              {stores.map((store) => (
+                <Link
+                  key={store.id}
+                  to={`/stores/${store.id}`}
+                  className={`px-4 py-3 rounded-full border-2 transition-all duration-300 hover:scale-105 flex items-center gap-3 cursor-pointer group ${
+                    (parseFloat(store.average_rating) || 0) >= 4.5 
+                      ? 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200' 
+                      : (parseFloat(store.average_rating) || 0) >= 3.5 
+                      ? 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200'
+                      : (parseFloat(store.average_rating) || 0) >= 2.5
+                      ? 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-200'
+                      : 'bg-red-100 text-red-800 border-red-200 hover:bg-red-200'
+                  }`}
+                >
+                  {/* Store Icon */}
+                  <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center">
+                    <Store className="w-4 h-4 text-current" />
+                  </div>
+                  
+                  {/* Store Info */}
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-sm">{store.name}</span>
+                    <div className="flex items-center gap-1">
                       {getRatingStars(store.average_rating || 0)}
-                      <span className="text-sm text-dark-300 ml-1">
-                        ({store.total_ratings || 0})
-                      </span>
+                      <span className="text-xs opacity-75">({store.total_ratings || 0})</span>
                     </div>
                   </div>
                   
-                  {/* Store Address */}
-                  <div className="flex items-start text-dark-300 mb-4">
-                    <MapPin className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm line-clamp-2">{store.address}</span>
+                  {/* Rating Badge */}
+                  <div className={`px-2 py-1 rounded-full text-xs font-bold ${
+                    (parseFloat(store.average_rating) || 0) >= 4.5 
+                      ? 'bg-green-200 text-green-900' 
+                      : (parseFloat(store.average_rating) || 0) >= 3.5 
+                      ? 'bg-blue-200 text-blue-900'
+                      : (parseFloat(store.average_rating) || 0) >= 2.5
+                      ? 'bg-yellow-200 text-yellow-900'
+                      : 'bg-red-200 text-red-900'
+                  }`}>
+                    {(parseFloat(store.average_rating) || 0).toFixed(1)}
                   </div>
-                  
-                  {/* Store Stats */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="text-sm">
-                      <span className="text-dark-300">Rating: </span>
-                      <span className={`font-semibold ${getRatingColor(store.average_rating || 0)}`}>
-                        {(parseFloat(store.average_rating) || 0).toFixed(1)}
-                      </span>
-                      <span className="text-dark-300"> / 5</span>
-                    </div>
-                    
-                    <div className="text-sm text-dark-300">
-                      <TrendingUp className="w-4 h-4 inline mr-1" />
-                      {store.total_ratings || 0} ratings
-                    </div>
-                  </div>
-                  
-                  {/* Action Button */}
-                  <Link
-                    to={`/stores/${store.id}`}
-                    className="btn-primary w-full text-center group-hover:scale-105 transition-transform duration-300"
-                  >
-                    View Details
-                  </Link>
-                </div>
-              </div>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
         )}
 
@@ -281,3 +331,4 @@ const Stores = () => {
 };
 
 export default Stores;
+

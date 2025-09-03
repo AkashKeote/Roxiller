@@ -2,6 +2,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+// Set axios base URL for development
+axios.defaults.baseURL = 'http://localhost:5000';
+
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -41,12 +44,16 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password, role) => {
     try {
+      console.log('Making API call to:', '/api/auth/login');
+      console.log('Request data:', { email, password, role });
+      
       const response = await axios.post('/api/auth/login', {
         email,
         password,
         role
       });
 
+      console.log('API response:', response.data);
       const { token: newToken, user: userData } = response.data;
       
       setToken(newToken);
@@ -57,6 +64,8 @@ export const AuthProvider = ({ children }) => {
       toast.success(`Welcome back, ${userData.name}!`);
       return { success: true, user: userData };
     } catch (error) {
+      console.error('API call failed:', error);
+      console.error('Error response:', error.response);
       const message = error.response?.data?.message || 'Login failed. Please try again.';
       toast.error(message);
       return { success: false, message };

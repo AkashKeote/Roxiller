@@ -190,6 +190,31 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Pallet Chips - Quick Access */}
+        <div className="mb-6 animate-slide-up">
+          <h3 className="text-lg font-semibold text-dark-400 mb-4">Quick Access</h3>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { label: 'View Stores', icon: '🏪', color: 'bg-blue-100 text-blue-800 border-blue-200', link: '/stores' },
+              { label: 'My Ratings', icon: '⭐', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', link: '/ratings' },
+              { label: 'Add Store', icon: '➕', color: 'bg-green-100 text-green-800 border-green-200', link: '/admin/stores' },
+              { label: 'User Management', icon: '👥', color: 'bg-purple-100 text-purple-800 border-purple-200', link: '/admin/users' },
+              { label: 'Analytics', icon: '📊', color: 'bg-orange-100 text-orange-800 border-orange-200', link: '/admin/dashboard' }
+            ].map((item, index) => (
+              <Link
+                key={index}
+                to={item.link}
+                className={`px-4 py-2 rounded-full border-2 transition-all duration-300 hover:scale-105 flex items-center gap-2 ${
+                  item.color
+                } hover:shadow-md`}
+              >
+                <span className="text-sm">{item.icon}</span>
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+
         {/* Quick Actions */}
         <div className="mb-8 animate-slide-up">
           <h2 className="text-2xl font-bold text-dark-400 mb-6">Quick Actions</h2>

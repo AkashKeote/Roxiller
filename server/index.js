@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
 require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
@@ -12,6 +13,11 @@ const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Set environment (will be overridden by Railway)
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'development';
+}
 
 // Trust proxy for rate limiting
 app.set('trust proxy', 1);
@@ -30,7 +36,7 @@ app.use('/api/', limiter);
 // CORS configuration
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://yourdomain.com'] 
+    ? [process.env.CLIENT_URL || 'https://your-app-name.railway.app'] 
     : ['http://localhost:3000'],
   credentials: true
 }));
@@ -38,6 +44,11 @@ app.use(cors({
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Serve static files from React build
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/build')));
+}
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -66,7 +77,12 @@ app.use((err, req, res, next) => {
 
 // 404 handler
 app.use('*', (req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+  if (process.env.NODE_ENV === 'production') {
+    // Serve React app for all non-API routes
+    res.sendFile(path.join(__dirname, '../client/build/index.html'));
+  } else {
+    res.status(404).json({ message: 'Route not found' });
+  }
 });
 
 app.listen(PORT, () => {

@@ -15,8 +15,8 @@ const UserDashboard = () => {
   const [stats, setStats] = useState({
     totalStores: 89,
     totalRatings: 156,
-    carbonSaved: 2.4,
-    ecoScore: 85
+    ratingStreak: 7,
+    ratingScore: 85
   });
   const [recentStores, setRecentStores] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -76,21 +76,21 @@ const UserDashboard = () => {
     }
   ];
 
-  const getEcoChallenges = () => [
+  const getRatingChallenges = () => [
     {
-      title: 'Rate 5 Eco-Friendly Stores',
-      description: 'Help promote sustainable businesses',
+      title: 'Rate 5 Stores',
+      description: 'Help promote good businesses',
       progress: 3,
       total: 5,
-      reward: 'Eco Warrior Badge',
+      reward: 'Rating Warrior Badge',
       color: '#4CAF50'
     },
     {
-      title: 'Save 5kg Carbon',
-      description: 'Choose eco-friendly products',
-      progress: 2.4,
-      total: 5,
-      reward: 'Carbon Saver Badge',
+      title: 'Rate 10 Stores',
+      description: 'Rate different stores',
+      progress: 7,
+      total: 10,
+      reward: 'Rating Expert Badge',
       color: '#2196F3'
     },
     {
@@ -122,7 +122,7 @@ const UserDashboard = () => {
     },
     {
       type: 'challenge',
-      store: 'Eco Challenge',
+      store: 'Rating Challenge',
       action: 'Completed challenge',
       time: '3 days ago',
       icon: Leaf,
@@ -203,9 +203,9 @@ const UserDashboard = () => {
               </div>
             </div>
             <h3 className="text-2xl font-bold text-[#22223B] mb-1">
-              {stats.carbonSaved} kg
+              {stats.ratingStreak} days
             </h3>
-            <p className="text-[#22223B]/70">Carbon Saved</p>
+            <p className="text-[#22223B]/70">Rating Streak</p>
           </div>
 
           <div className="bg-white rounded-3xl shadow-lg shadow-gray-200/50 p-6 hover:shadow-xl transition-all duration-300">
@@ -215,73 +215,97 @@ const UserDashboard = () => {
               </div>
             </div>
             <h3 className="text-2xl font-bold text-[#22223B] mb-1">
-              {stats.ecoScore}%
+              {stats.ratingScore}%
             </h3>
-            <p className="text-[#22223B]/70">Eco Score</p>
+            <p className="text-[#22223B]/70">Rating Score</p>
           </div>
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions - Pallet Chips */}
         <div className="mb-8 animate-slide-up">
           <h2 className="text-2xl font-bold text-[#22223B] mb-6">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {getQuickActionCards().map((action, index) => (
+          <div className="flex flex-wrap gap-3">
+            {[
+              { label: 'Rate Stores', icon: '⭐', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', link: '/stores' },
+              { label: 'View Ratings', icon: '📊', color: 'bg-blue-100 text-blue-800 border-blue-200', link: '/ratings' },
+              { label: 'Find Stores', icon: '🔍', color: 'bg-green-100 text-green-800 border-green-200', link: '/stores' },
+              { label: 'My Profile', icon: '👤', color: 'bg-purple-100 text-purple-800 border-purple-200', link: '/profile' },
+              { label: 'Store Map', icon: '🗺️', color: 'bg-orange-100 text-orange-800 border-orange-200', link: '/stores' },
+              { label: 'Notifications', icon: '🔔', color: 'bg-pink-100 text-pink-800 border-pink-200', link: '/notifications' }
+            ].map((action, index) => (
               <Link
                 key={index}
                 to={action.link}
-                className="bg-white rounded-3xl shadow-lg shadow-gray-200/50 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group"
+                className={`px-4 py-2 rounded-full border-2 transition-all duration-300 hover:scale-105 flex items-center gap-2 ${action.color} hover:shadow-md`}
               >
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300" style={{ backgroundColor: action.color }}>
-                    <action.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-[#22223B] mb-2">
-                    {action.title}
-                  </h3>
-                  <p className="text-[#22223B]/70 text-sm">
-                    {action.description}
-                  </p>
-                </div>
+                <span className="text-sm">{action.icon}</span>
+                {action.label}
               </Link>
             ))}
           </div>
         </div>
 
-        {/* Eco Challenges */}
+        {/* Rating Challenges - Pallet Chips */}
         <div className="mb-8 animate-slide-up">
-          <h2 className="text-2xl font-bold text-[#22223B] mb-6">Eco Challenges</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {getEcoChallenges().map((challenge, index) => (
-              <div key={index} className="bg-white rounded-3xl shadow-lg shadow-gray-200/50 p-6">
-                <div className="flex items-center gap-3 mb-4">
-                                     <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ backgroundColor: challenge.color }}>
-                     <Leaf className="w-5 h-5 text-white" />
-                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-[#22223B]">{challenge.title}</h3>
-                    <p className="text-[#22223B]/70 text-sm">{challenge.description}</p>
+          <h2 className="text-2xl font-bold text-[#22223B] mb-6">Rating Challenges</h2>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { 
+                label: 'Rate 5 Stores', 
+                progress: '3/5', 
+                reward: 'Rating Warrior Badge',
+                color: 'bg-green-100 text-green-800 border-green-200',
+                progressColor: 'bg-green-500'
+              },
+              { 
+                label: 'Rate 10 Stores', 
+                progress: '7/10', 
+                reward: 'Rating Expert Badge',
+                color: 'bg-blue-100 text-blue-800 border-blue-200',
+                progressColor: 'bg-blue-500'
+              },
+              { 
+                label: 'Visit 10 Stores', 
+                progress: '7/10', 
+                reward: 'Explorer Badge',
+                color: 'bg-orange-100 text-orange-800 border-orange-200',
+                progressColor: 'bg-orange-500'
+              },
+              { 
+                label: 'Rate 20 Stores', 
+                progress: '15/20', 
+                reward: 'Rating Master Badge',
+                color: 'bg-purple-100 text-purple-800 border-purple-200',
+                progressColor: 'bg-purple-500'
+              },
+              { 
+                label: 'Perfect Ratings', 
+                progress: '8/10', 
+                reward: 'Perfect Score Badge',
+                color: 'bg-pink-100 text-pink-800 border-pink-200',
+                progressColor: 'bg-pink-500'
+              }
+            ].map((challenge, index) => (
+              <div
+                key={index}
+                className={`px-4 py-3 rounded-full border-2 transition-all duration-300 hover:scale-105 cursor-pointer ${challenge.color} hover:shadow-md`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-sm">{challenge.label}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs opacity-75">{challenge.reward}</span>
+                      <div className="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full transition-all duration-300 ${challenge.progressColor}`}
+                          style={{ 
+                            width: `${(parseInt(challenge.progress.split('/')[0]) / parseInt(challenge.progress.split('/')[1])) * 100}%`
+                          }}
+                        ></div>
+                      </div>
+                      <span className="text-xs font-medium">{challenge.progress}</span>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="mb-4">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-[#22223B]/70">Progress</span>
-                    <span className="text-[#22223B] font-medium">{challenge.progress}/{challenge.total}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="h-2 rounded-full transition-all duration-300" 
-                      style={{ 
-                        width: `${(challenge.progress / challenge.total) * 100}%`,
-                        backgroundColor: challenge.color
-                      }}
-                    ></div>
-                  </div>
-                </div>
-                
-                <div className="text-center">
-                  <span className="text-sm text-[#22223B]/70">Reward: </span>
-                  <span className="text-sm font-medium text-[#22223B]">{challenge.reward}</span>
                 </div>
               </div>
             ))}
@@ -294,7 +318,7 @@ const UserDashboard = () => {
           <div className="bg-white rounded-3xl shadow-lg shadow-gray-200/50">
             <div className="p-6 border-b border-[#B5C7F7]/20">
               <h3 className="text-xl font-semibold text-[#22223B]">Recent Activity</h3>
-              <p className="text-[#22223B]/70 text-sm">Your latest eco-friendly actions</p>
+              <p className="text-[#22223B]/70 text-sm">Your latest rating actions</p>
             </div>
             
             <div className="p-6">
@@ -319,7 +343,7 @@ const UserDashboard = () => {
           <div className="bg-white rounded-3xl shadow-lg shadow-gray-200/50">
             <div className="p-6 border-b border-[#B5C7F7]/20">
               <h3 className="text-xl font-semibold text-[#22223B]">Recommended Stores</h3>
-              <p className="text-[#22223B]/70 text-sm">Eco-friendly stores you might like</p>
+              <p className="text-[#22223B]/70 text-sm">Stores you might like</p>
             </div>
             
             <div className="p-6">
@@ -369,7 +393,7 @@ const UserDashboard = () => {
                 <div className="text-center py-8">
                   <Store className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-[#22223B] mb-2">No stores found</h3>
-                  <p className="text-[#22223B]/70">Start exploring eco-friendly stores!</p>
+                  <p className="text-[#22223B]/70">Start exploring stores!</p>
                 </div>
               )}
             </div>
@@ -386,7 +410,7 @@ const UserDashboard = () => {
               Ready to Make a Difference?
             </h3>
             <p className="text-[#22223B]/70 text-lg mb-6">
-              Rate eco-friendly stores and participate in challenges to earn badges and save the planet!
+              Rate stores and participate in challenges to earn badges and improve the platform!
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link to="/stores" className="bg-[#4CAF50] hover:bg-[#45A049] text-white font-semibold py-3 px-6 rounded-2xl transition-all duration-300 shadow-lg shadow-[#4CAF50]/30 hover:shadow-xl inline-flex items-center gap-2">

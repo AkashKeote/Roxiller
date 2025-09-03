@@ -167,6 +167,19 @@
   @apply bg-red-100 text-red-800;
 }
 
+/* Pallet Chips Styles */
+.pallet-chip {
+  @apply px-4 py-2 rounded-full border-2 transition-all duration-300 hover:scale-105 cursor-pointer;
+}
+
+.pallet-chip:hover {
+  @apply shadow-md transform -translate-y-1;
+}
+
+.pallet-chip.active {
+  @apply shadow-lg transform -translate-y-1;
+}
+
 /* Custom keyframes */
 @keyframes fadeIn {
   0% { opacity: 0; transform: translateY(20px); }

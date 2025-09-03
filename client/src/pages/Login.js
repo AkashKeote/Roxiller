@@ -49,12 +49,15 @@ const Login = () => {
 
     setLoading(true);
     try {
+      console.log('Attempting login with:', { email: formData.email, role: formData.role });
       const result = await login(formData.email, formData.password, formData.role);
+      console.log('Login result:', result);
       if (result.success) {
         // Navigation will be handled by the router
       }
     } catch (error) {
       console.error('Login error:', error);
+      toast.error('Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -142,6 +145,8 @@ const Login = () => {
             Sign In
           </h2>
           
+
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Field */}
             <div>
@@ -173,7 +178,7 @@ const Login = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full px-5 py-5 border-2 border-gray-200 rounded-2xl focus:border-[#B5C7F7] focus:ring-4 focus:ring-[#B5C7F7]/20 transition-all duration-300 bg-white shadow-sm pr-14"
+                  className="w-full pl-16 pr-14 py-5 border-2 border-gray-200 rounded-2xl focus:border-[#B5C7F7] focus:ring-4 focus:ring-[#B5C7F7]/20 transition-all duration-300 bg-white shadow-sm"
                   placeholder="Enter your password"
                   required
                 />
@@ -213,9 +218,9 @@ const Login = () => {
           <div className="mt-6 p-4 bg-[#F9E79F]/20 rounded-2xl border border-[#F9E79F]/30">
             <h3 className="text-sm font-semibold text-[#22223B] mb-2">Demo Account</h3>
             <div className="text-xs text-[#22223B]/80 space-y-1">
-              <p><strong>Admin:</strong> admin@store.com / Admin123!</p>
-              <p><strong>Store Owner:</strong> owner@store.com / Owner123!</p>
-              <p><strong>User:</strong> user@store.com / User123!</p>
+              <p><strong>Admin:</strong> admin@system.com / Admin@123</p>
+              <p><strong>Store Owner:</strong> store@example.com / Store@123</p>
+              <p><strong>User:</strong> user@example.com / User@123</p>
             </div>
           </div>
         </div>
