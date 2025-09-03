@@ -1,5 +1,3 @@
-# Store Rating System - FullStack Intern Coding Challenge
-
 A web application that allows users to submit ratings for stores registered on the platform, with role-based access control.
 
 ## 🚀 Tech Stack
